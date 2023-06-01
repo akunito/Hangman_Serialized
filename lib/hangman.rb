@@ -19,7 +19,8 @@ module GameLibrary
   end
 
   def user_input
-    puts "Select an English character A-Z: "
+    puts "(Select number 0 to back to Menu)"
+    puts "To play, enter an English character A-Z: "
     gets.downcase.to_s[0]
   end
 
@@ -55,21 +56,25 @@ class Game
     @guesses = 16
     @secret_word = get_random_word_5_12
     @found_word = Array.new(@secret_word.length, "_")
+    @number_array = %w[0 1 2 3 4 5 6 7 8 9]
   end
 
   def play
     while @round
       puts
-      @round += 1
-      # show how many guesses left before dying painfully
+      # lives and words
       puts lives(@guesses-@round)
+      p @secret_word
+      p @found_word.join
       # get user input
       selection = user_input
       puts selection
+      # PAUSE game?
+      break if @number_array.include?(selection)
       # show discovered characters
       @found_word = search_char_into_word(selection, @secret_word, @found_word)
-      p @found_word.join
       # check win or lose
+      @round += 1
       if @secret_word == @found_word.join
         puts
         puts "You WON !! The secret word was --> #{@secret_word} <--"
@@ -77,8 +82,8 @@ class Game
         break
       elsif @round >= @guesses
         puts
-        puts "You LOST so you DIE slow and painfully !!"
-        puts "The secret word was --> #{@secret_word} <-"
+        puts "The secret word was --> #{@secret_word} <- but it's too late... I cannot say I'm sorry."
+        puts "💀💀💀 You LOST so you DIE slow and painfully 💀💀💀!!"
         puts
         break
       end

@@ -2,7 +2,30 @@
 # https://www.theodinproject.com/lessons/ruby-hangman
 
 require "open-uri"
-require "json"
+
+module SerializeObject
+  def serialize(object, filename)
+    begin
+      puts "Game saved"
+      File.open(filename, 'w+') do |f|
+        Marshal.dump(object, f)
+      end
+    rescue
+      puts "File was not created. Permissions?"
+    end
+  end
+
+  def unserialize(filename)
+    begin
+      puts "Game loaded"
+      File.open(filename) do |f|
+        Marshal.load(f)
+      end
+    rescue
+      puts "File #{filename} was not found or cannot be loaded. Did you save the game previously?"
+    end
+  end
+end
 
 module GameLibrary
   def get_random_word_5_12
@@ -64,7 +87,7 @@ class Game
       puts
       # lives and words
       puts lives(@guesses-@round)
-      p @secret_word
+      # p @secret_word
       p @found_word.join
       # get user input
       selection = user_input
@@ -92,6 +115,7 @@ class Game
 
 end
 
+include SerializeObject
 include MenuLibrary
 playing = true
 
@@ -106,21 +130,12 @@ while playing
   when 1
     hangman.play
   when 2
-    # save game
+    serialize(hangman, "save")
   when 3
-    # load game
+    hangman = unserialize("save")
   else
     break
   end
 
 end
-
-
-# Now implement the functionality where, at the start of any turn, instead of making a guess the player should also
-# have the option to save the game. Remember what you learned about serializing objects… you can serialize your game
-# class too!
-
-
-# When the program first loads, add in an option that allows you to open one of your saved games, which should jump
-# you exactly back to where you were when you saved. Play on!
 
